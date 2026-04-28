@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Producto - TechShop Paraguay</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="header-top">
+            <a href="index.html" class="logo">⚡ TechShop PY</a>
+                <div class="header-actions">
+                    <div class="search-bar">
+                        <input type="text" id="searchInput" placeholder="Buscar productos...">
+                        <button onclick="searchAndGo(document.querySelector('#searchInput').value)">🔍</button>
+                    </div>
+                    <div class="cart-icon" onclick="toggleCart()">🛒
+                        <span class="cart-count">0</span>
+                    </div>
+                    <div class="account-menu">
+                        <button class="account-btn" onclick="openAuthModal('login')" title="Iniciar sesión o crear cuenta" aria-label="Mi cuenta">👤 Cuenta</button>
+                    </div>
+                </div>
+        </div>
+        <nav class="nav-menu">
+            <a href="index.html">🏠 Inicio</a>
+            <a href="products.html?category=notebooks">💻 Notebooks</a>
+            <a href="products.html?category=celulares">📱 Celulares</a>
+            <a href="products.html?category=electrodomesticos">🧊 Electrodomésticos</a>
+            <a href="index.html#ofertas">🎯 Ofertas</a>
+        </nav>
+    </header>
+
+    <!-- CARRITO LATERAL -->
+    <div class="cart-modal">
+        <div class="cart-header">
+            <h2>Mi Carrito</h2>
+            <button class="close-btn" onclick="toggleCart()">&times;</button>
+        </div>
+        <div class="cart-items-list"></div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span>Gs. 0</span>
+            </div>
+            <button class="btn-proceed" onclick="proceedToCheckout()">Proceder a Pagar</button>
+        </div>
+    </div>
+
+    <!-- MODAL AUTENTICACIÓN -->
+    <div class="modal auth-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="authTitle">Iniciar Sesión</h2>
+                <button class="close-btn" onclick="closeAuthModal()">&times;</button>
+            </div>
+            <div class="auth-form"></div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="container">
+        <div class="breadcrumb">
+            <a href="index.html">Inicio</a>
+            <span>/</span>
+            <a href="products.html" id="categoryLink">Productos</a>
+            <span>/</span>
+            <span id="productNameBread">Producto</span>
+        </div>
+
+        <!-- CONTENEDOR DE DETALLES -->
+        <div class="product-details-container">
+            <!-- GALERÍA DE IMÁGENES -->
+            <div class="product-gallery">
+                <div class="main-image" id="mainImage">
+                    <span id="productIcon">💻</span>
+                </div>
+            </div>
+
+            <!-- INFORMACIÓN DEL PRODUCTO -->
+            <div class="product-info">
+                <h1 id="productName">Nombre del Producto</h1>
+                <p class="brand" id="productBrand">Marca</p>
+
+                <!-- RATING Y RESEÑAS -->
+                <div class="rating-section">
+                    <div class="rating-stars" id="ratingStars">
+                        ⭐⭐⭐⭐⭐
+                    </div>
+                    <span class="rating-value" id="ratingValue">4.5</span>
+                    <span class="review-count" id="reviewCount">(45 reseñas)</span>
+                </div>
+
+                <!-- PRECIO -->
+                <div class="price-section">
+                    <div class="price-original" id="priceOriginal">Gs. 5,200,000</div>
+                    <div class="price-current" id="priceCurrent">Gs. 4,500,000</div>
+                    <div class="discount-badge" id="discountBadge">-13%</div>
+                </div>
+
+                <!-- DISPONIBILIDAD -->
+                <div class="availability">
+                    <span class="stock-status" id="stockStatus">✓ En stock</span>
+                </div>
+
+                <!-- CARACTERÍSTICAS PRINCIPALES -->
+                <div class="main-features">
+                    <h3>Características Principales</h3>
+                    <ul id="mainFeaturesList">
+                        <li>Procesador de alta velocidad</li>
+                        <li>Pantalla Full HD</li>
+                        <li>8GB de RAM</li>
+                        <li>256GB SSD</li>
+                    </ul>
+                </div>
+
+                <!-- BOTONES DE ACCIÓN -->
+                <div class="product-actions">
+                    <input type="number" id="quantityInput" value="1" min="1" class="quantity-input">
+                    <button class="btn-add-cart" onclick="addToCartFromDetails()">🛒 Agregar al Carrito</button>
+                    <button class="btn-wishlist">❤️ Agregar a Favoritos</button>
+                </div>
+
+                <!-- INFORMACIÓN ADICIONAL -->
+                <div class="additional-info">
+                    <div class="info-item">
+                        <span class="icon">🚚</span>
+                        <span>Envío a todo Paraguay</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="icon">🛡️</span>
+                        <span>Garantía oficial</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="icon">↩️</span>
+                        <span>Devolución en 30 días</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABS DE CONTENIDO -->
+        <div class="content-tabs">
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="switchTab('specifications')">📋 Especificaciones</button>
+                <button class="tab-btn" onclick="switchTab('reviews')">⭐ Reseñas</button>
+                <button class="tab-btn" onclick="switchTab('qa')">❓ Preguntas</button>
+            </div>
+
+            <!-- ESPECIFICACIONES -->
+            <div id="specifications" class="tab-content active">
+                <div class="specs-container" id="specsContainer">
+                    <div class="spec-item">
+                        <span class="spec-label">Procesador:</span>
+                        <span class="spec-value" id="specProcessor">-</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Memoria RAM:</span>
+                        <span class="spec-value" id="specRam">-</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Almacenamiento:</span>
+                        <span class="spec-value" id="specStorage">-</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Pantalla:</span>
+                        <span class="spec-value" id="specDisplay">-</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Sistema Operativo:</span>
+                        <span class="spec-value" id="specOs">-</span>
+                    </div>
+                    <div class="spec-item">
+                        <span class="spec-label">Batería:</span>
+                        <span class="spec-value" id="specBattery">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RESEÑAS -->
+            <div id="reviews" class="tab-content">
+                <div class="reviews-container">
+                    <div class="review-summary">
+                        <div class="summary-score">
+                            <span class="score" id="avgRating">4.5</span>
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                        </div>
+                        <div class="summary-stats" id="summaryStats">
+                            <div class="stat">⭐⭐⭐⭐⭐ 30 reseñas</div>
+                            <div class="stat">⭐⭐⭐⭐ 10 reseñas</div>
+                            <div class="stat">⭐⭐⭐ 3 reseñas</div>
+                            <div class="stat">⭐⭐ 2 reseñas</div>
+                        </div>
+                    </div>
+
+                    <div class="write-review">
+                        <h4>Escribe tu reseña</h4>
+                        <form onsubmit="submitReview(event)">
+                            <div class="rating-input">
+                                <label>Tu calificación</label>
+                                <select id="reviewRating" required>
+                                    <option value="">Selecciona una calificación</option>
+                                    <option value="5">⭐⭐⭐⭐⭐ Excelente</option>
+                                    <option value="4">⭐⭐⭐⭐ Muy Bueno</option>
+                                    <option value="3">⭐⭐⭐ Bueno</option>
+                                    <option value="2">⭐⭐ Regular</option>
+                                    <option value="1">⭐ Malo</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Título de la reseña</label>
+                                <input type="text" id="reviewTitle" required placeholder="Resumen de tu opinión">
+                            </div>
+                            <div class="form-group">
+                                <label>Tu reseña</label>
+                                <textarea id="reviewText" required placeholder="Cuéntanos tu experiencia con este producto..." rows="4"></textarea>
+                            </div>
+                            <button type="submit" class="btn-submit-review">Enviar Reseña</button>
+                        </form>
+                    </div>
+
+                    <div class="reviews-list" id="reviewsList">
+                        <!-- Las reseñas se cargarán aquí -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- PREGUNTAS Y RESPUESTAS -->
+            <div id="qa" class="tab-content">
+                <div class="qa-container">
+                    <div class="ask-question">
+                        <h4>¿Tienes una pregunta?</h4>
+                        <form onsubmit="submitQuestion(event)">
+                            <div class="form-group">
+                                <label>Tu pregunta</label>
+                                <textarea id="questionText" required placeholder="¿Qué deseas saber sobre este producto?" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn-submit-question">Enviar Pregunta</button>
+                        </form>
+                    </div>
+
+                    <div class="questions-list" id="questionsList">
+                        <!-- Las preguntas se cargarán aquí -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRODUCTOS RELACIONADOS -->
+        <div class="related-products">
+            <h2>Productos Relacionados</h2>
+            <div class="products-grid" id="relatedProductsGrid">
+                <!-- Los productos se cargarán aquí -->
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer style="background: #0f3460; color: white; padding: 40px 30px; margin-top: 60px; text-align: center;">
+        <p>&copy; 2024 TechShop Paraguay. Todos los derechos reservados.</p>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+        // Obtener ID del producto desde URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = parseInt(urlParams.get('id'));
+
+        // Cargar detalles del producto
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProductDetails(productId);
+            loadRelatedProducts(productId);
+        });
+
+        function loadProductDetails(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) {
+                window.location.href = 'products.html';
+                return;
+            }
+
+            // Información básica
+            document.getElementById('productName').textContent = product.name;
+            document.getElementById('productBrand').textContent = `Marca: ${product.brand}`;
+            document.getElementById('productIcon').textContent = product.icon;
+            document.getElementById('productNameBread').textContent = product.name;
+            
+            // Link de categoría
+            const categoryLink = document.getElementById('categoryLink');
+            categoryLink.href = `products.html?category=${product.category}`;
+
+            // Rating
+            const stars = getStarRating(product.rating);
+            document.getElementById('ratingStars').innerHTML = stars;
+            document.getElementById('ratingValue').textContent = product.rating.toFixed(1);
+            document.getElementById('avgRating').textContent = product.rating.toFixed(1);
+
+            // Precio
+            const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
+            document.getElementById('priceOriginal').textContent = `Gs. ${product.originalPrice.toLocaleString('es-PY')}`;
+            document.getElementById('priceCurrent').textContent = `Gs. ${product.price.toLocaleString('es-PY')}`;
+            document.getElementById('discountBadge').textContent = `-${discount}%`;
+
+            // Especificaciones
+            loadProductSpecs(product);
+
+            // Reseñas
+            loadProductReviews(id);
+
+            // Preguntas
+            loadProductQuestions(id);
+        }
+
+        function loadProductSpecs(product) {
+            const specs = productSpecs[product.id] || {};
+            document.getElementById('specProcessor').textContent = specs.processor || 'No disponible';
+            document.getElementById('specRam').textContent = specs.ram || 'No disponible';
+            document.getElementById('specStorage').textContent = specs.storage || 'No disponible';
+            document.getElementById('specDisplay').textContent = specs.display || 'No disponible';
+            document.getElementById('specOs').textContent = specs.os || 'No disponible';
+            document.getElementById('specBattery').textContent = specs.battery || 'No disponible';
+        }
+
+        function loadProductReviews(productId) {
+            const reviews = getProductReviews(productId);
+            const reviewsList = document.getElementById('reviewsList');
+            
+            if (reviews.length === 0) {
+                reviewsList.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No hay reseñas aún. ¡Sé el primero en dejar una!</p>';
+                return;
+            }
+
+            reviewsList.innerHTML = reviews.map(review => `
+                <div class="review-item">
+                    <div class="review-header">
+                        <span class="review-author">${review.author}</span>
+                        <span class="review-rating">${getStarRating(review.rating)}</span>
+                    </div>
+                    <p class="review-title"><strong>${review.title}</strong></p>
+                    <p class="review-text">${review.text}</p>
+                    <span class="review-date">${new Date(review.date).toLocaleDateString('es-PY')}</span>
+                </div>
+            `).join('');
+        }
+
+        function loadProductQuestions(productId) {
+            const questions = getProductQuestions(productId);
+            const questionsList = document.getElementById('questionsList');
+            
+            if (questions.length === 0) {
+                questionsList.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No hay preguntas aún.</p>';
+                return;
+            }
+
+            questionsList.innerHTML = questions.map(question => `
+                <div class="question-item">
+                    <p class="question-text"><strong>${question.author}:</strong> ${question.text}</p>
+                    <span class="question-date">${new Date(question.date).toLocaleDateString('es-PY')}</span>
+                </div>
+            `).join('');
+        }
+
+        function loadRelatedProducts(productId) {
+            const product = products.find(p => p.id === productId);
+            const related = products.filter(p => p.category === product.category && p.id !== productId).slice(0, 4);
+            
+            const grid = document.getElementById('relatedProductsGrid');
+            grid.innerHTML = related.map(p => `
+                <div class="product-card" onclick="goToProductDetails(${p.id})">
+                    <div class="product-icon">${p.icon}</div>
+                    <p class="product-name">${p.name}</p>
+                    <p class="product-brand">${p.brand}</p>
+                    <div class="product-rating">${getStarRating(p.rating)}</div>
+                    <p class="product-price">Gs. ${p.price.toLocaleString('es-PY')}</p>
+                </div>
+            `).join('');
+        }
+
+        function switchTab(tabName) {
+            // Ocultar todos los tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Mostrar el tab seleccionado
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function submitReview(e) {
+            e.preventDefault();
+            
+            const rating = parseInt(document.getElementById('reviewRating').value);
+            const title = document.getElementById('reviewTitle').value;
+            const text = document.getElementById('reviewText').value;
+            
+            const review = {
+                productId,
+                author: currentUser ? currentUser.name : 'Anónimo',
+                rating,
+                title,
+                text,
+                date: new Date().toISOString()
+            };
+
+            let reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+            reviews.push(review);
+            localStorage.setItem('reviews', JSON.stringify(reviews));
+
+            // Limpiar formulario
+            e.target.reset();
+            showNotification('✓ Reseña publicada exitosamente');
+            loadProductReviews(productId);
+        }
+
+        function submitQuestion(e) {
+            e.preventDefault();
+            
+            const text = document.getElementById('questionText').value;
+            
+            const question = {
+                productId,
+                author: currentUser ? currentUser.name : 'Anónimo',
+                text,
+                date: new Date().toISOString()
+            };
+
+            let questions = JSON.parse(localStorage.getItem('questions')) || [];
+            questions.push(question);
+            localStorage.setItem('questions', JSON.stringify(questions));
+
+            // Limpiar formulario
+            e.target.reset();
+            showNotification('✓ Pregunta enviada exitosamente');
+            loadProductQuestions(productId);
+        }
+
+        function addToCartFromDetails() {
+            const quantity = parseInt(document.getElementById('quantityInput').value);
+            const product = products.find(p => p.id === productId);
+            
+            for (let i = 0; i < quantity; i++) {
+                addToCart(productId);
+            }
+        }
+
+        function goToProductDetails(id) {
+            window.location.href = `product-details.html?id=${id}`;
+        }
+
+        function getStarRating(rating) {
+            const stars = Math.round(rating);
+            return '⭐'.repeat(stars) + '☆'.repeat(5 - stars);
+        }
+
+        function getProductReviews(productId) {
+            let reviews = JSON.parse(localStorage.getItem('reviews')) || [];
+            return reviews.filter(r => r.productId === productId);
+        }
+
+        function getProductQuestions(productId) {
+            let questions = JSON.parse(localStorage.getItem('questions')) || [];
+            return questions.filter(q => q.productId === productId);
+        }
+    </script>
+</body>
+</html>

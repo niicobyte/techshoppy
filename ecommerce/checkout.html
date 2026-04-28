@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - TechShop Paraguay</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="header-top">
+            <a href="index.html" class="logo">⚡ TechShop PY</a>
+            
+            <div class="header-actions">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Buscar productos..." style="display: none;">
+                    <button onclick="searchAndGo(document.querySelector('#searchInput').value)" style="display: none;">🔍</button>
+                </div>
+
+                <div class="cart-icon" onclick="toggleCart()">
+                    🛒
+                    <span class="cart-count">0</span>
+                </div>
+
+                <div class="account-menu">
+                    <button class="account-btn" onclick="openAuthModal('login')" title="Iniciar sesión o crear cuenta" aria-label="Mi cuenta">👤 Cuenta</button>
+                </div>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <a href="index.html">🏠 Inicio</a>
+            <a href="products.html?category=notebooks">💻 Notebooks</a>
+            <a href="products.html?category=celulares">📱 Celulares</a>
+            <a href="products.html?category=electrodomesticos">🧊 Electrodomésticos</a>
+        </nav>
+    </header>
+
+    <!-- CARRITO LATERAL -->
+    <div class="cart-modal">
+        <div class="cart-header">
+            <h2>Mi Carrito</h2>
+            <button class="close-btn" onclick="toggleCart()">&times;</button>
+        </div>
+        <div class="cart-items-list"></div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span>Gs. 0</span>
+            </div>
+            <button class="btn-proceed" onclick="proceedToCheckout()">Proceder a Pagar</button>
+        </div>
+    </div>
+
+    <!-- MODAL AUTENTICACIÓN -->
+    <div class="modal auth-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="authTitle">Iniciar Sesión</h2>
+                <button class="close-btn" onclick="closeAuthModal()">&times;</button>
+            </div>
+            <div class="auth-form"></div>
+        </div>
+    </div>
+
+    <!-- MODAL CONFIRMACIÓN PEDIDO -->
+    <div class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Información</h2>
+                <button class="close-btn" onclick="this.closest('.modal').classList.remove('active')">&times;</button>
+            </div>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="container">
+        <h2 class="section-title">🛍️ Finalizar Compra</h2>
+
+        <div class="checkout-container">
+            <!-- FORMULARIO CHECKOUT -->
+            <form class="checkout-form" onsubmit="processPayment(event)">
+                <!-- DATOS PERSONALES -->
+                <div class="form-section">
+                    <h3>👤 Datos Personales</h3>
+                    <div class="form-group">
+                        <label>Nombre Completo</label>
+                        <input type="text" id="fullName" value="" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="email" value="" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="tel" placeholder="0991 XXX XXX" required>
+                    </div>
+                </div>
+
+                <!-- DIRECCIÓN DE ENVÍO -->
+                <div class="form-section">
+                    <h3>📍 Dirección de Envío</h3>
+                    <div class="form-group">
+                        <label>Calle y Número</label>
+                        <input type="text" id="street" placeholder="Ej: Av. España 123" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ciudad</label>
+                            <input type="text" id="city" placeholder="Ej: Asunción" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Departamento</label>
+                            <select id="country" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="Asunción">Asunción</option>
+                                <option value="Central">Departamento Central</option>
+                                <option value="Itapúa">Itapúa</option>
+                                <option value="Alto Paraná">Alto Paraná</option>
+                                <option value="Caaguazú">Caaguazú</option>
+                                <option value="Misiones">Misiones</option>
+                                <option value="Guairá">Guaira</option>
+                                <option value="Caazapá">Caazapá</option>
+                                <option value="Itapúa">Canindeyú</option>
+                                <option value="Amambay">Amambay</option>
+                                <option value="Concepción">Concepción</option>
+                                <option value="Pte. Hayes">Presidente Hayes</option>
+                                <option value="Boquerón">Boquerón</option>
+                                <option value="Alto Paraguay">Alto Paraguay</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Código Postal (Opcional)</label>
+                        <input type="text" id="zipCode" placeholder="1500">
+                    </div>
+                </div>
+
+                <!-- MÉTODOS DE PAGO -->
+                <div class="form-section">
+                    <h3>💳 Método de Pago</h3>
+                    <p style="color: #666; margin-bottom: 15px; font-size: 14px;">Selecciona tu método de pago preferido:</p>
+                    
+                    <div class="payment-methods">
+                        <!-- TRANSFERENCIA BANCARIA -->
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="transfer" required>
+                            <i>🏦</i>
+                            <p><strong>Transferencia Bancaria</strong></p>
+                            <p style="font-size: 12px; color: #999;">BNF, Itaú, Basa, Continental, Banco Familiar </p>
+                        </label>
+
+                        <!-- QR -->
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="qr" required>
+                            <i>📲</i>
+                            <p><strong>Código QR</strong></p>
+                            <p style="font-size: 12px; color: #999;">PagoMóvil, </p>
+                        </label>
+
+                        <!-- TARJETA DE CRÉDITO -->
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="card" required>
+                            <i>💳</i>
+                            <p><strong>Tarjeta de Crédito</strong></p>
+                            <p style="font-size: 12px; color: #999;">Visa, Mastercard</p>
+                        </label>
+
+                        <!-- CUOTAS -->
+                        <label class="payment-option">
+                            <input type="radio" name="paymentMethod" value="installments" required>
+                            <i>📊</i>
+                            <p><strong>Cuotas</strong></p>
+                            <p style="font-size: 12px; color: #999;">3 o 6 cuotas</p>
+                        </label>
+                    </div>
+
+                    <div id="paymentDetails" style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px; display: none;">
+                        <!-- Este div se llenará dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- TÉRMINOS -->
+                <div class="form-section">
+                    <label style="display: flex; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" id="termsAccepted" required>
+                        <span>Acepto los términos y condiciones y la política de privacidad</span>
+                    </label>
+                </div>
+
+                <!-- BOTÓN PROCESAR -->
+                <button type="submit" class="btn-checkout" style="width: 100%; padding: 15px; font-size: 16px; margin-top: 20px;">
+                    ✓ Completar Compra
+                </button>
+            </form>
+
+            <!-- RESUMEN DE ORDEN -->
+            <aside class="order-summary">
+                <h3 style="color: #1a1a2e; margin-bottom: 20px;">📦 Resumen de Orden</h3>
+                <div class="cart-items"></div>
+                
+                <div class="summary-item">
+                    <label>Subtotal:</label>
+                    <span id="subtotal">Gs. 0</span>
+                </div>
+                <div class="summary-item">
+                    <label>Envío:</label>
+                    <span id="shipping">Gs. 0</span>
+                </div>
+                <div class="summary-item">
+                    <label>Impuestos:</label>
+                    <span id="taxes">Gs. 0</span>
+                </div>
+                <div class="summary-item total">
+                    <label>Total:</label>
+                    <span id="total">Gs. 0</span>
+                </div>
+
+                <div style="background: #fff3cd; padding: 10px; border-radius: 5px; margin-top: 15px; font-size: 12px; color: #856404;">
+                    <p style="margin: 0;"><strong>ℹ️ Información:</strong></p>
+                    <p style="margin: 5px 0 0 0;">Envío a todo Paraguay</p>
+                    <p style="margin: 5px 0 0 0;">Productos 100% originales</p>
+                    <p style="margin: 5px 0 0 0;">Garantía del fabricante</p>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Sobre Nosotros</h4>
+                <ul>
+                    <li><a href="#">¿Quiénes Somos?</a></li>
+                    <li><a href="#">Nuestra Misión</a></li>
+                    <li><a href="#">Contacto</a></li>
+                    <li><a href="#">Trabajá con Nosotros</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Compra</h4>
+                <ul>
+                    <li><a href="#">Envíos y Devoluciones</a></li>
+                    <li><a href="#">Garantía de Productos</a></li>
+                    <li><a href="#">Términos y Condiciones</a></li>
+                    <li><a href="#">Política de Privacidad</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Métodos de Pago</h4>
+                <ul>
+                    <li><a href="#">Transferencia Bancaria</a></li>
+                    <li><a href="#">QR</a></li>
+                    <li><a href="#">Tarjetas de Crédito</a></li>
+                    <li><a href="#">Cuotas</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Atención al Cliente</h4>
+                <ul>
+                    <li>📞 0991 670 000</li>
+                    <li>📧 info@techshop.py</li>
+                    <li>💬 WhatsApp</li>
+                    <li>🕐 Lun-Vie 8:00-18:00</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 TechShop Paraguay. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+        // Inicializar checkout
+        window.addEventListener('load', function() {
+            if (!currentUser) {
+                location.href = 'index.html';
+                return;
+            }
+
+            if (cart.length === 0) {
+                location.href = 'index.html';
+                return;
+            }
+
+            // Llenar datos del usuario
+            document.querySelector('#fullName').value = currentUser.name;
+            document.querySelector('#email').value = currentUser.email;
+
+            // Actualizar resumen
+            updateCheckoutSummary();
+        });
+
+        function updateCheckoutSummary() {
+            const cartItemsDiv = document.querySelector('.cart-items');
+            cartItemsDiv.innerHTML = cart.map(item => `
+                <div class="cart-item-summary">
+                    <div class="item-qty">${item.quantity}x</div>
+                    <div class="item-detail">
+                        <p class="name">${item.name}</p>
+                        <p class="brand">${item.brand}</p>
+                    </div>
+                    <div class="item-price">Gs. ${(item.price * item.quantity).toLocaleString('es-PY')}</div>
+                </div>
+            `).join('');
+
+            const subtotal = getCartTotal();
+            const shipping = 50000; // Gs. 50.000 envío
+            const taxes = Math.floor(subtotal * 0.1); // 10% impuestos
+            const total = subtotal + shipping + taxes;
+
+            document.querySelector('#subtotal').textContent = `Gs. ${subtotal.toLocaleString('es-PY')}`;
+            document.querySelector('#shipping').textContent = `Gs. ${shipping.toLocaleString('es-PY')}`;
+            document.querySelector('#taxes').textContent = `Gs. ${taxes.toLocaleString('es-PY')}`;
+            document.querySelector('#total').textContent = `Gs. ${total.toLocaleString('es-PY')}`;
+        }
+
+        // Mostrar detalles de pago según el método seleccionado
+        document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const paymentDetails = document.querySelector('#paymentDetails');
+                
+                if (this.value === 'transfer') {
+                    paymentDetails.innerHTML = `
+                        <h4>🏦 Datos para Transferencia Bancaria</h4>
+                        <p style="margin-top: 10px;"><strong>Banco Nacional del Paraguay (BNP)</strong></p>
+                        <p>Número de Cuenta: <strong>4500123456</strong></p>
+                        <p>Titular: <strong>TechShop Paraguay S.A.</strong></p>
+                        <p>RUC: <strong>80123456789</strong></p>
+                        <hr style="margin: 15px 0; border: none; border-top: 1px solid #ddd;">
+                        <p style="margin-top: 10px;"><strong>Banco Itaú</strong></p>
+                        <p>Número de Cuenta: <strong>1234567890</strong></p>
+                        <p>Titular: <strong>TechShop Paraguay S.A.</strong></p>
+                        <p style="margin-top: 15px; color: #666; font-size: 12px;">
+                            <strong>Importante:</strong> Envía la evidencia de transferencia vía WhatsApp para confirmar tu pago.
+                        </p>
+                    `;
+                    paymentDetails.style.display = 'block';
+                } else if (this.value === 'qr') {
+                    paymentDetails.innerHTML = `
+                        <h4>📲 Código QR</h4>
+                        <div style="text-align: center; padding: 20px;">
+                            <div style="
+                                width: 200px;
+                                height: 200px;
+                                background: linear-gradient(45deg, #00d4ff, #0099cc);
+                                margin: 0 auto;
+                                border-radius: 10px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-size: 100px;
+                                color: white;
+                            ">📲</div>
+                        </div>
+                        <p style="text-align: center; margin-top: 15px; color: #666;">
+                            Escanea este código QR con tu aplicación de pago móvil (BanCO, PagoMóvil, etc.)
+                        </p>
+                    `;
+                    paymentDetails.style.display = 'block';
+                } else if (this.value === 'card') {
+                    paymentDetails.innerHTML = `
+                        <h4>💳 Información de Tarjeta</h4>
+                        <p style="color: #666; font-size: 12px; margin: 10px 0;">
+                            Serás redirigido a nuestra plataforma de pago segura (Bancard)
+                        </p>
+                        <div class="form-group">
+                            <label>Número de Tarjeta</label>
+                            <input type="text" placeholder="1234 5678 9012 3456" maxlength="19">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Vencimiento</label>
+                                <input type="text" placeholder="MM/AA" maxlength="5">
+                            </div>
+                            <div class="form-group">
+                                <label>CVV</label>
+                                <input type="text" placeholder="123" maxlength="3">
+                            </div>
+                        </div>
+                    `;
+                    paymentDetails.style.display = 'block';
+                } else if (this.value === 'installments') {
+                    const total = getCartTotal() + 50000 + Math.floor(getCartTotal() * 0.1);
+                    const cuota3 = Math.floor(total / 3);
+                    const cuota6 = Math.floor(total / 6);
+                    
+                    paymentDetails.innerHTML = `
+                        <h4>📊 Cuotas Disponibles</h4>
+                        <label style="display: flex; align-items: center; margin: 10px 0; cursor: pointer;">
+                            <input type="radio" name="installmentOption" value="3" checked>
+                            <span style="margin-left: 10px;">3 cuotas de Gs. ${cuota3.toLocaleString('es-PY')}</span>
+                        </label>
+                        <label style="display: flex; align-items: center; margin: 10px 0; cursor: pointer;">
+                            <input type="radio" name="installmentOption" value="6">
+                            <span style="margin-left: 10px;">6 cuotas de Gs. ${cuota6.toLocaleString('es-PY')}</span>
+                        </label>
+                        <p style="color: #666; font-size: 12px; margin-top: 10px;">
+                            Se aplicarán intereses según tu banco.
+                        </p>
+                    `;
+                    paymentDetails.style.display = 'block';
+                } else {
+                    paymentDetails.style.display = 'none';
+                }
+            });
+        });
+
+        // Prevenir ir atrás si el carrito está vacío
+        window.addEventListener('beforeunload', function(e) {
+            if (cart.length === 0) {
+                location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

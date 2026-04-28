@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Productos - TechShop Paraguay</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="header-top">
+            <a href="index.html" class="logo">⚡ TechShop PY</a>
+            
+            <div class="header-actions">
+                <div class="search-bar">
+                    <input type="text" id="searchInput" placeholder="Buscar productos...">
+                    <button onclick="searchAndGo(document.querySelector('#searchInput').value)">🔍</button>
+                </div>
+
+                <div class="cart-icon" onclick="toggleCart()">
+                    🛒
+                    <span class="cart-count">0</span>
+                </div>
+
+                <div class="account-menu">
+                    <button class="account-btn" onclick="openAuthModal('login')" title="Iniciar sesión o crear cuenta" aria-label="Mi cuenta">👤 Cuenta</button>
+                </div>
+            </div>
+        </div>
+
+        <nav class="nav-menu">
+            <a href="index.html">🏠 Inicio</a>
+            <a href="products.html?category=notebooks">💻 Notebooks</a>
+            <a href="products.html?category=celulares">📱 Celulares</a>
+            <a href="products.html?category=electrodomesticos">🧊 Electrodomésticos</a>
+            <a href="index.html#ofertas">🎯 Ofertas</a>
+        </nav>
+    </header>
+
+    <!-- CARRITO LATERAL -->
+    <div class="cart-modal">
+        <div class="cart-header">
+            <h2>Mi Carrito</h2>
+            <button class="close-btn" onclick="toggleCart()">&times;</button>
+        </div>
+        <div class="cart-items-list"></div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span>Gs. 0</span>
+            </div>
+            <button class="btn-proceed" onclick="proceedToCheckout()">Proceder a Pagar</button>
+        </div>
+    </div>
+
+    <!-- MODAL AUTENTICACIÓN -->
+    <div class="modal auth-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="authTitle">Iniciar Sesión</h2>
+                <button class="close-btn" onclick="closeAuthModal()">&times;</button>
+            </div>
+            <div class="auth-form"></div>
+        </div>
+    </div>
+
+    <!-- MODAL GENÉRICO -->
+    <div class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Información</h2>
+                <button class="close-btn" onclick="this.closest('.modal').classList.remove('active')">&times;</button>
+            </div>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="container">
+        <div class="products-container">
+            <!-- SIDEBAR FILTROS -->
+            <aside class="sidebar">
+                <h3 class="sidebar-title">🔍 Filtros</h3>
+
+                <!-- FILTRO POR CATEGORÍA -->
+                <div class="filter-group">
+                    <label style="font-weight: bold; margin-bottom: 10px;">Categoría</label>
+                    <select id="categoryFilter" onchange="applyFilters()" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                        <option value="">Todas las categorías</option>
+                        <option value="notebooks">💻 Notebooks</option>
+                        <option value="celulares">📱 Celulares</option>
+                        <option value="electrodomesticos">🧊 Electrodomésticos</option>
+                    </select>
+                </div>
+
+                <!-- FILTRO POR MARCA -->
+                <div class="filter-group">
+                    <label style="font-weight: bold; margin-bottom: 10px; display: block;">Marca</label>
+                    <label><input type="checkbox" name="brand" value="ASUS" onchange="applyFilters()"> ASUS</label>
+                    <label><input type="checkbox" name="brand" value="HP" onchange="applyFilters()"> HP</label>
+                    <label><input type="checkbox" name="brand" value="Lenovo" onchange="applyFilters()"> Lenovo</label>
+                    <label><input type="checkbox" name="brand" value="Dell" onchange="applyFilters()"> Dell</label>
+                    <label><input type="checkbox" name="brand" value="Samsung" onchange="applyFilters()"> Samsung</label>
+                    <label><input type="checkbox" name="brand" value="Apple" onchange="applyFilters()"> Apple</label>
+                    <label><input type="checkbox" name="brand" value="Xiaomi" onchange="applyFilters()"> Xiaomi</label>
+                    <label><input type="checkbox" name="brand" value="Motorola" onchange="applyFilters()"> Motorola</label>
+                    <label><input type="checkbox" name="brand" value="Consul" onchange="applyFilters()"> Consul</label>
+                    <label><input type="checkbox" name="brand" value="Electrolux" onchange="applyFilters()"> Electrolux</label>
+                    <label><input type="checkbox" name="brand" value="Daewoo" onchange="applyFilters()"> Daewoo</label>
+                    <label><input type="checkbox" name="brand" value="LG" onchange="applyFilters()"> LG</label>
+                </div>
+
+                <!-- FILTRO POR PRECIO -->
+                <div class="filter-group">
+                    <label style="font-weight: bold; margin-bottom: 10px; display: block;">Rango de Precio</label>
+                    <label>Precio Mínimo (Gs.)</label>
+                    <input type="number" id="minPrice" placeholder="0" min="0" onchange="applyFilters()">
+                    
+                    <label style="margin-top: 10px;">Precio Máximo (Gs.)</label>
+                    <input type="number" id="maxPrice" placeholder="10000000" onchange="applyFilters()">
+                </div>
+
+                <!-- ORDENAR -->
+                <div class="filter-group">
+                    <label style="font-weight: bold; margin-bottom: 10px; display: block;">Ordenar Por</label>
+                    <select id="sortBy" onchange="applyFilters()" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                        <option value="">Relevancia</option>
+                        <option value="price-asc">💰 Menor Precio</option>
+                        <option value="price-desc">💸 Mayor Precio</option>
+                        <option value="newest">🆕 Más Nuevo</option>
+                    </select>
+                </div>
+
+                <button onclick="resetFilters()" style="width: 100%; padding: 10px; background: #00d4ff; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 20px;">Limpiar Filtros</button>
+            </aside>
+
+            <!-- CONTENIDO PRINCIPAL -->
+            <div class="main-content">
+                <h2 class="section-title" id="pageTitle">Todos los Productos</h2>
+                <div class="products-grid"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Sobre Nosotros</h4>
+                <ul>
+                    <li><a href="#">¿Quiénes Somos?</a></li>
+                    <li><a href="#">Nuestra Misión</a></li>
+                    <li><a href="#">Contacto</a></li>
+                    <li><a href="#">Trabajá con Nosotros</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Compra</h4>
+                <ul>
+                    <li><a href="#">Envíos y Devoluciones</a></li>
+                    <li><a href="#">Garantía de Productos</a></li>
+                    <li><a href="#">Términos y Condiciones</a></li>
+                    <li><a href="#">Política de Privacidad</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Métodos de Pago</h4>
+                <ul>
+                    <li><a href="#">Transferencia Bancaria</a></li>
+                    <li><a href="#">QR</a></li>
+                    <li><a href="#">Tarjetas de Crédito</a></li>
+                    <li><a href="#">Cuotas</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Atención al Cliente</h4>
+                <ul>
+                    <li>📞 0991 670 000</li>
+                    <li>📧 info@techshop.py</li>
+                    <li>💬 WhatsApp</li>
+                    <li>🕐 Lun-Vie 8:00-18:00</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 TechShop Paraguay. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+        // Función para buscar y redirigir
+        function searchAndGo(query) {
+            if (query.trim()) {
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('search', query);
+                window.location.href = currentUrl.toString();
+            }
+        }
+
+        // Permitir búsqueda con Enter
+        document.querySelector('#searchInput')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchAndGo(this.value);
+            }
+        });
+
+        // Obtener parámetros de URL
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                category: params.get('category'),
+                search: params.get('search')
+            };
+        }
+
+        // Función para resetear filtros
+        function resetFilters() {
+            document.querySelector('#categoryFilter').value = '';
+            document.querySelectorAll('input[name="brand"]').forEach(c => c.checked = false);
+            document.querySelector('#minPrice').value = '';
+            document.querySelector('#maxPrice').value = '';
+            document.querySelector('#sortBy').value = '';
+            applyFilters();
+        }
+
+        // Inicializar página
+        window.addEventListener('load', function() {
+            const params = getUrlParams();
+            
+            // Actualizar título
+            const pageTitle = document.querySelector('#pageTitle');
+            if (params.category) {
+                const categoryNames = {
+                    notebooks: '💻 Notebooks',
+                    celulares: '📱 Celulares',
+                    electrodomesticos: '🧊 Electrodomésticos'
+                };
+                pageTitle.textContent = categoryNames[params.category] || 'Productos';
+                document.querySelector('#categoryFilter').value = params.category;
+            }
+
+            // Filtrar por búsqueda
+            if (params.search) {
+                const filtered = searchProducts(params.search);
+                displayProducts(filtered);
+                pageTitle.textContent = `🔍 Resultados para: "${params.search}"`;
+                document.querySelector('#searchInput').value = params.search;
+            } else {
+                applyFilters();
+            }
+        });
+
+        // Funcionalidad de filtros mejorada
+        document.querySelectorAll('input[type="number"]').forEach(input => {
+            input.addEventListener('change', applyFilters);
+        });
+    </script>
+</body>
+</html>
